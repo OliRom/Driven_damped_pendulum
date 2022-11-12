@@ -2,14 +2,14 @@ import numpy as np
 
 
 class Pendulum:
-    def __init__(self, teta, omega, t_range, driving_force, saving_data_path):
+    def __init__(self, teta, omega, t_range, driving_force, data_saving_path):
         """
         Initialisation des paramètres du pendule
         :param teta: Angle initial du pendule
         :param omega: Vitesse angulaire initiale du pendule
         :param t_range: Temps sur lesquels intégrer
         :param driving_force: Fonction qui drive le pendule
-        :param saving_data_path: Path du fichier où enregistrer les données à la fin d'une simulation
+        :param data_saving_path: Path du fichier où enregistrer les données à la fin d'une simulation
         """
         n_tps = len(t_range)
         self.temps = np.array(t_range)
@@ -19,7 +19,7 @@ class Pendulum:
         self.driving_force = driving_force
         self.teta[0] = teta
         self.omega[0] = omega
-        self.saving_data_path = saving_data_path
+        self.data_saving_path = data_saving_path
 
     def evolute_one_step(self):
         """
