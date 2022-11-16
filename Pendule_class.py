@@ -11,16 +11,17 @@ class Pendulum:
         :param driving_force: Fonction qui drive le pendule
         :param data_saving_path: Path du fichier où enregistrer les données à la fin d'une simulation
         """
-        n_tps = len(t_range)
+        self.n_iter = len(t_range)  # Nombre total d'itération d'intégrations à effectuer
+        self.iteration = 0  # Iteration d'intégration à laquelle le programme est rendu
+
         self.temps = np.array(t_range)
-        self.teta = np.empty(n_tps)
-        self.omega = np.empty(n_tps)
+        self.teta = np.empty(self.n_iter)
+        self.omega = np.empty(self.n_iter)
 
         self.driving_force = driving_force
         self.teta[0] = teta
         self.omega[0] = omega
         self.data_saving_path = data_saving_path
-
 
     def evolute_one_step(self):
         """
@@ -34,7 +35,9 @@ class Pendulum:
         Fait évoluer le pendule jusqu'à la fin du range de temps initialisé.
         :return: None
         """
-        pass
+        while self.iteration < self.n_iter:
+            # Code ici
+            self.iteration += 1
 
     def save_data(self, file_path=None, overwrite=False):
         """
