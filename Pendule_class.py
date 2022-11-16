@@ -21,6 +21,7 @@ class Pendulum:
         self.omega[0] = omega
         self.data_saving_path = data_saving_path
         print('heyheyhey')
+        print('youpi')
 
     def evolute_one_step(self):
         """
