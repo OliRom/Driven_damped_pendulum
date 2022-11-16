@@ -20,9 +20,7 @@ class Pendulum:
         self.teta[0] = teta
         self.omega[0] = omega
         self.data_saving_path = data_saving_path
-        print('heyheyhey')
-        print('youpi')
-        print('hehdge')
+
 
     def evolute_one_step(self):
         """
