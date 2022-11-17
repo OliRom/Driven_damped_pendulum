@@ -15,6 +15,8 @@ class Pendulum:
         self.iteration = 0  # Iteration d'intégration à laquelle le programme est rendu
 
         self.temps = np.array(t_range)
+        self.dt = self.temps[0] - self.temps[1]
+
         self.teta = np.empty(self.n_iter)
         self.omega = np.empty(self.n_iter)
 
@@ -28,7 +30,14 @@ class Pendulum:
         Fait évoluer l'état du pendule d'un intervalle de temps.
         :return: None
         """
-        pass
+        i = self.iteration
+
+        force = self.driving_force(self.temps[i])
+
+        self.teta[i] = 0  # Équation du mouvement à remplacer
+        self.omega[i] = 0  # Équation du mouvement à remplacer
+
+        self.iteration += 1
 
     def evolute_to_end(self):
         """
@@ -36,8 +45,9 @@ class Pendulum:
         :return: None
         """
         while self.iteration < self.n_iter:
-            # Code ici
-            self.iteration += 1
+            self.evolute_one_step()
+
+        self.save_data()
 
     def save_data(self, file_path=None, overwrite=False):
         """
