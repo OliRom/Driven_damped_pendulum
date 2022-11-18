@@ -1,4 +1,3 @@
 if __name__ == "__main__":
-    import Other_functions as of
-
-    print(of.get_saving_name())
+    dictio = {i: j for i, j in zip(range(3), range(3, 6))}
+    print(dictio)
