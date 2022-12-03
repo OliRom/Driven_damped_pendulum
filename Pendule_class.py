@@ -45,6 +45,7 @@ class Pendulum:
         self.omega[0] = omega
 
         self.log_path = log_path
+        self.already_simulated = self.is_already_simulated()
 
     def get_driving_function(self):
         """
@@ -79,6 +80,9 @@ class Pendulum:
         Fait évoluer le pendule jusqu'à la fin du range de temps initialisé.
         :return: None
         """
+        if self.already_simulated:
+            return
+
         while self.iteration < self.n_iter:
             self.evolute_one_step()
 
@@ -90,15 +94,13 @@ class Pendulum:
         self.log_path .
         :return: None
         """
+        if self.already_simulated:
+            return
+
         params = self.get_params()
         # Ligne à ajouter dans le fichier de log pour garder une trace
         param_stamp = ",".join([str(params[p]) for p in param.log_file_column_names])
         time_stamp = of.get_saving_name()
-
-        with open(self.log_path, "r") as reader:
-            for line in reader.readlines():
-                if line.strip().endswith(param_stamp):
-                    return
 
         col_names = ["t", "teta", "omega"]
         data = [self.temps, self.teta, self.omega]
@@ -130,3 +132,19 @@ class Pendulum:
         }
 
         return dic
+
+    def is_already_simulated(self):
+        """
+        Fonction qui vérifie si la simulation a déjà été effectuée avec les paramètres initiaux.
+        :return: True si déjà simulée, False sinon
+        """
+        params = self.get_params()
+        # Ligne ajoutée dans le fichier de log pour garder une trace
+        param_stamp = ",".join([str(params[p]) for p in param.log_file_column_names])
+
+        with open(self.log_path, "r") as reader:
+            for line in reader.readlines():
+                if line.strip().endswith(param_stamp):
+                    return True
+
+        return False
