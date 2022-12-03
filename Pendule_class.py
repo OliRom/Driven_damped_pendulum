@@ -99,7 +99,7 @@ class Pendulum:
 
         params = self.get_params()
         # Ligne à ajouter dans le fichier de log pour garder une trace
-        param_stamp = ",".join([str(params[p]) for p in param.log_file_column_names])
+        param_stamp = ",".join([str(of.round_to_precision(params[p], 5)) for p in param.log_file_column_names])
         time_stamp = of.get_saving_name()
 
         col_names = ["t", "teta", "omega"]
@@ -140,7 +140,7 @@ class Pendulum:
         """
         params = self.get_params()
         # Ligne ajoutée dans le fichier de log pour garder une trace
-        param_stamp = ",".join([str(params[p]) for p in param.log_file_column_names])
+        param_stamp = ",".join([str(of.round_to_precision(params[p], 5)) for p in param.log_file_column_names])
 
         with open(self.log_path, "r") as reader:
             for line in reader.readlines():
