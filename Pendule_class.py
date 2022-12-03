@@ -2,10 +2,12 @@ import numpy as np
 import Other_functions as of
 import pandas as pd
 import Parameters as param
+import os
 
 
 class Pendulum:
-    def __init__(self, teta, omega, t_range, driving_force, driving_ang_freq, driving_delta, l, m, damping, g, log_path):
+    def __init__(self, teta, omega, t_range, driving_force, driving_ang_freq, driving_delta, l, m, damping, g,
+                 log_path):
         """
         Initialisation des paramètres du pendule
         :param teta: Angle initial du pendule
@@ -21,10 +23,10 @@ class Pendulum:
         :param log_path: Path du fichier où enregistrer les données à la fin d'une simulation
         """
         self.n_iter = len(t_range)  # Nombre total d'itération d'intégrations à effectuer
-        self.iteration = 0  # Iteration d'intégration à laquelle le programme est rendu
+        self.iteration = 1  # Iteration d'intégration à laquelle le programme est rendu
 
         self.temps = np.array(t_range)
-        self.dt = self.temps[0] - self.temps[1]
+        self.dt = self.temps[1] - self.temps[0]
 
         self.teta = np.empty(self.n_iter)
         self.omega = np.empty(self.n_iter)
@@ -60,11 +62,15 @@ class Pendulum:
         :return: None
         """
         i = self.iteration
+        t = self.temps[i]
 
-        force = self.driving_force(self.temps[i])
+        force = self.driving_function(t)
+        g = self.g
+        beta = self.damping * g
 
-        self.teta[i] = 0  # Équation du mouvement à remplacer
-        self.omega[i] = 0  # Équation du mouvement à remplacer
+        self.teta[i] = self.teta[i-1] + self.omega[i-1] * self.dt
+        self.omega[i] = self.omega[i-1] + ((-force - beta * self.omega[i-1]) / (self.m * self.l**2)
+                                           - g * np.sin(self.teta[i-1]) * self.l) * self.dt
 
         self.iteration += 1
 
@@ -86,21 +92,21 @@ class Pendulum:
         """
         params = self.get_params()
         # Ligne à ajouter dans le fichier de log pour garder une trace
-        param_stamp = str([params[p] for p in param.log_file_column_names])
+        param_stamp = ",".join([str(params[p]) for p in param.log_file_column_names])
         time_stamp = of.get_saving_name()
 
         with open(self.log_path, "r") as reader:
             for line in reader.readlines():
-                if line.startswith(param_stamp):
-                    break
+                if line.strip().endswith(param_stamp):
+                    return
 
         col_names = ["t", "teta", "omega"]
         data = [self.temps, self.teta, self.omega]
 
         df = pd.DataFrame({cn: dt for cn, dt in zip(col_names, data)})
-        df.to_csv(time_stamp, sep=',', header=col_names, index=False)
+        df.to_csv(os.path.join(param.data_path, time_stamp + ".csv"), sep=',', header=col_names, index=False)
 
-        log_string = param_stamp + time_stamp + "\n"
+        log_string = time_stamp + "," + param_stamp + "\n"
         with open(self.log_path, "a") as writer:
             writer.write(log_string)
 
@@ -113,6 +119,7 @@ class Pendulum:
             "teta0": self.teta[0],
             "omega0": self.omega[0],
             "dt": self.dt,
+            "n_iter": self.n_iter,
             "driving_force": self.driving_force,
             "driving_ang_freq": self.driving_ang_freq,
             "driving_delta": self.driving_delta,
