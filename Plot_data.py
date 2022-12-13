@@ -13,8 +13,8 @@ def plot_3d():
     """
     path = "test_log.csv"
     temps = np.arange(0, 10.005, 0.01)
-    teta0 = [of.round_to_precision(x, 5) for x in np.linspace(0, np.pi / 4, 100)]
-    omega0 = [of.round_to_precision(x, 5) for x in np.linspace(0, 2, 100)]
+    teta0 = [of.round_to_precision(x, 8) for x in np.linspace(0, np.pi / 4, 100)]
+    omega0 = [of.round_to_precision(x, 8) for x in np.linspace(0, 2, 100)]
 
     params = {"teta0": teta0, "omega0": omega0}
     paths = of.get_sim_names(path, params)
@@ -25,7 +25,7 @@ def plot_3d():
     for path in paths:
         full_path = os.path.join(param.data_path, path + ".csv")
         data = pd.read_csv(full_path)["teta"]
-        first_teta = of.round_to_precision(data[0], 5)
+        first_teta = of.round_to_precision(data[0], 8)
         z[:, y.index(first_teta)] = data
 
     X, Y = np.meshgrid(x, y)

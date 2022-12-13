@@ -37,7 +37,7 @@ def get_sim_names(path, params):
     :param params: Les paramètres voulus (sous forme d'un dictionnaire)
     :return: Une list des time_stamp retenus
     """
-    simulations = pd.read_csv(path, usecols=list(params.keys())+["time_stamp"])
+    simulations = pd.read_csv(path, usecols=list(params.keys()) + ["time_stamp"])
     for key, val in params.items():
         simulations = simulations[simulations[key].isin(val)]
 
