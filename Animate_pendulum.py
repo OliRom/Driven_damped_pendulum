@@ -5,7 +5,7 @@ import pandas as pd
 import os
 import numpy as np
 
-data_path = os.path.join("D:", "Big_data", "PHS2107_mec_sup_projet_final", "2022_12_02_23_50_10_719002.csv")
+data_path = os.path.join("D:", "Big_data", "PHS2107_mec_sup_projet_final", "2022_12_12_17_39_31_806987.csv")
 
 data = pd.read_csv(data_path)
 x = data["t"]
