@@ -4,6 +4,7 @@ import Parameters as param
 import Other_functions as of
 import numpy as np
 import matplotlib.pyplot as plt
+import matplotlib.colors as colors
 from scipy.fft import rfft, rfftfreq
 
 
@@ -197,7 +198,46 @@ def plot_fft_simple():
 
 
 def plot_fft_multiple():
-    pass
+    variable = [of.round_to_precision(gam, 8) for gam in np.linspace(1.06, 1.53, 10000)]
+    variable = [variable[i*10] for i in range(1000)]
+    variable_name = "gamma"
+    ajout_dans_le_titre = "l'amplitude de la force externe"
+    y_label = r"$\gamma$"
+    temps = [of.round_to_precision(t, 8) for t in np.arange(0, 100.0005, 0.005)]
+
+    log_path = "test_log.csv"
+
+    n_iter = len(temps)
+    dt = temps[1] - temps[0]
+    params = {variable_name: variable, "dt": [dt], "n_iter": [n_iter]}
+    paths = of.get_sim_names(log_path, params)
+
+    log_file = pd.read_csv(log_path)
+    ordered_paths = log_file[log_file["time_stamp"].isin(paths)].sort_values(variable_name)["time_stamp"]
+
+    print("Getting data...")
+    x = rfftfreq(n_iter, dt)
+    y = variable
+    z = np.zeros((len(x), len(y)))
+    #yfft = rfft(teta) / n_tps * 2  # 2/n_tps est pour normaliser le spectre
+    for i, path in enumerate(ordered_paths):
+        data_path = os.path.join(param.data_path, path+".csv")
+        data = pd.read_csv(data_path)
+        z[:, i] = abs(rfft(data["teta"].tolist())) / n_iter * 2
+
+    X, Y = np.meshgrid(x, y)
+    fig, ax = plt.subplots()
+    ax.set_title(f"Transformée de Fourier de l'angle du pendule en fonction de {ajout_dans_le_titre}")
+    ax.set_xlabel("Fréquence (Hz)")
+    ax.set_ylabel(y_label)
+    ax.set_xlim(xmin=0, xmax=10)
+    pc = ax.pcolormesh(X, Y, z.T, norm=colors.LogNorm(vmin=1e-3))
+    cbar = fig.colorbar(pc)
+    cbar.set_label("Amplitude")
+    plt.show()
 
 
-plot_fft_simple()
+plot_fft_multiple()
+
+# plt.subplots_adjust(hspace=1, left=0.05, right=0.95)
+# plt.show()
