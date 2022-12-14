@@ -30,21 +30,25 @@ def plot_teta_vs_t():
     plt.show()
 
 
-def plot_3d_teta_omega_vs_teta0():
+def plot_3d_teta_omega_vs_other_param():
     """
     Fonction incomplète et hardcodée
     :return:
     """
+    variable_name = "teta0"
+    ajout_dans_le_titre = "l'angle initial (rad)"
+    y_label = r"$\theta_0$ (rad)"
+
     path = "test_log.csv"
     temps = np.arange(0, 10.005, 0.01)
-    teta0 = [of.round_to_precision(x, 8) for x in np.linspace(0, np.pi / 4, 100)]
-    omega0 = [of.round_to_precision(x, 8) for x in np.linspace(0, 2, 100)]
+    variable = [of.round_to_precision(x, 8) for x in np.linspace(0, np.pi / 4, 100)]
+    # omega0 = [of.round_to_precision(x, 8) for x in np.linspace(0, 2, 100)]
 
-    params = {"teta0": teta0, "omega0": omega0}
+    params = {variable_name: variable}
     paths = of.get_sim_names(path, params)
 
     x = temps
-    y = teta0
+    y = variable
     teta = np.zeros((len(x), len(y)))
     omega = np.zeros((len(x), len(y)))
     for path in paths:
@@ -59,26 +63,26 @@ def plot_3d_teta_omega_vs_teta0():
     ax = plt.axes(projection="3d")
     ax.plot_surface(X, Y, teta.T)
     ax.set_xlabel("Temps (s)")
-    ax.set_ylabel(r"$\theta_0$ (rad)")
+    ax.set_ylabel(y_label)
     ax.set_zlabel(r"$\theta$ (rad)")
-    plt.title("Évolution du pendule en fonction de l'angle intial (rad)")
+    plt.title(f"Évolution du pendule en fonction de {ajout_dans_le_titre}")
     plt.show()
 
     # Affichage 3D avec de la couleur
     fig, axs = plt.subplots(1, 2)
-    fig.suptitle("Évolution du pendule en fonction de l'angle initial (rad)", fontsize=20)
+    fig.suptitle(f"Évolution du pendule en fonction de {ajout_dans_le_titre}", fontsize=20)
 
     pc0 = axs[0].pcolormesh(X, Y, teta.T)
     axs[0].set_title("Angle avec la verticale")
     axs[0].set_xlabel("Temps (s)")
-    axs[0].set_ylabel(r"$\theta_0$ (rad)")
+    axs[0].set_ylabel(y_label)
     cbar0 = fig.colorbar(pc0, ax=axs[0])
     cbar0.set_label(r"$\theta$ (rad)")
 
     pc1 = axs[1].pcolormesh(X, Y, omega.T)
     axs[1].set_title("Vitesse angulaire")
     axs[1].set_xlabel("Temps (s)")
-    axs[1].set_ylabel(r"$\theta_0$ (rad)")
+    axs[1].set_ylabel(y_label)
     cbar1 = fig.colorbar(pc1, ax=axs[1])
     cbar1.set_label(r"$\omega$ (rad/s)")
 
@@ -129,4 +133,4 @@ def plot_bifurcation():
     plt.show()
 
 
-plot_3d_teta_omega_vs_teta0()
+plot_3d_teta_omega_vs_other_param()
