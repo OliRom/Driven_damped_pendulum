@@ -6,7 +6,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 
-def plot_teta_vs_t():
+def plot_teta_and_omega_vs_t():
     t_max = 30  # Afficher les données jusqu'à ce temps
 
     log_path = "test_log.csv"
@@ -21,12 +21,15 @@ def plot_teta_vs_t():
     index_max = int(t_max / dt) + 1
 
     t_range = [i*dt for i in range(n_tps)][:index_max+1]
-    y = data_file["teta"][:index_max+1]
+    teta = data_file["teta"][:index_max + 1]
+    omega = data_file["omega"][:index_max + 1]
 
-    plt.plot(t_range, y)
-    plt.title("Angle que fait le pendule avec la verticale en fonction du temps")
+    plt.plot(t_range, teta, label=r"$\theta$ (rad)")
+    plt.plot(t_range, omega, label=r"$\omega$ (rad/s)")
+    plt.title("Évolution du pendule en fonction du temps")
     plt.xlabel("Temps (s)")
-    plt.ylabel(r"$\theta$ (rad)")
+    # plt.ylabel(r"$\theta$ (rad)")
+    plt.legend()
     plt.show()
 
 
@@ -133,4 +136,36 @@ def plot_bifurcation():
     plt.show()
 
 
-plot_3d_teta_omega_vs_other_param()
+def plot_espace_phase():
+    t_max = 50  # Afficher les données jusqu'à ce temps
+    dt = 0.005
+    line_width = 0.5
+
+    index_max = int(t_max/dt) + 1
+
+    time_stamp = "2022_12_13_13_08_01_974951"
+    sim_path = os.path.join(param.data_path, time_stamp + ".csv")
+    data_file = pd.read_csv(sim_path)
+
+    teta = data_file["teta"][:index_max + 1]
+    omega = data_file["omega"][:index_max + 1]
+
+    plt.plot(teta, omega, linewidth=line_width)
+
+    plt.title("Espace des phases du pendule")
+    plt.xlabel(r"$\theta$ (rad)")
+    plt.ylabel(r"$\omega$ (rad/s)")
+    plt.axhline(0, color="gray", linewidth=1)
+    plt.axvline(0, color="gray", linewidth=1)
+    plt.show()
+
+
+def plot_fft_simple():
+    pass
+
+
+def plot_fft_multiple():
+    pass
+
+
+plot_teta_and_omega_vs_t()
