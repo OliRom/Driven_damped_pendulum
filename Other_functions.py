@@ -97,13 +97,21 @@ def test_sim_data(sim_path):
 
 
 def delete_unreadeable(log_path, data_path):
-    sim_names = pd.read_csv(log_path)["time_stamp"]
+    log_file = pd.read_csv(log_path)
+    sim_names = log_file["time_stamp"]
     bad_indexes = list()
     for index, name in enumerate(sim_names):
+        to_remove = False
         try:
-            pd.read_csv(os.path.join(data_path, name + ".csv"))
+            data = pd.read_csv(os.path.join(data_path, name + ".csv"))
+            if len(data.index) != log_file.loc[log_file["time_stamp"] == name]["n_iter"].tolist()[0]:
+                bad_indexes.append(index+1)
+                to_remove = True
         except:
             bad_indexes.append(index+1)
+            to_remove = True
+
+        if to_remove:
             try:
                 print(f"Removed \"{name}\".")
                 os.remove(os.path.join(data_path, name + ".csv"))
