@@ -4,6 +4,7 @@ import Parameters as param
 import Other_functions as of
 import numpy as np
 import matplotlib.pyplot as plt
+from scipy.fft import rfft, rfftfreq
 
 
 def plot_teta_and_omega_vs_t():
@@ -161,11 +162,42 @@ def plot_espace_phase():
 
 
 def plot_fft_simple():
-    pass
+    time_stamp = "2022_12_13_13_08_01_974951"
+    n_tps = 200001
+    dt = 0.005
+    signal_x_max = 30  # Temps maximal du signal à afficher
+    fft_x_max = 10  # Fréquence maximale à afficher
+
+    sim_path = os.path.join(param.data_path, time_stamp + ".csv")
+    data_file = pd.read_csv(sim_path)
+
+    temps = np.arange(0, n_tps*dt, dt)
+    teta = data_file["teta"].tolist()
+    xfft = rfftfreq(n_tps, dt)
+    yfft = rfft(teta) / n_tps * 2  # 2/n_tps est pour normaliser le spectre
+
+    fig, axs = plt.subplots(1, 2)
+    fig.suptitle("Transformée de Fourier de l'angle du pendule avec la verticale", fontsize=20)
+
+    axs[0].set_title("Angle avec la verticale")
+    axs[0].set_xlabel("Temps (s)")
+    axs[0].set_ylabel(r"$\theta$ (rad/s)")
+    axs[0].plot(temps, teta)
+    if signal_x_max is not None:
+        axs[0].set_xlim(xmin=-1, xmax=signal_x_max)
+
+    axs[1].set_title("Transformée de Fourier")
+    axs[1].set_xlabel("Fréquence (Hz)")
+    axs[1].set_ylabel("Amplitude")
+    axs[1].plot(xfft[1:], np.abs(yfft)[1:])
+    if fft_x_max is not None:
+        axs[1].set_xlim(xmin=0, xmax=fft_x_max)
+
+    plt.show()
 
 
 def plot_fft_multiple():
     pass
 
 
-plot_teta_and_omega_vs_t()
+plot_fft_simple()
