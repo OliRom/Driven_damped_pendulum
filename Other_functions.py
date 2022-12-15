@@ -30,17 +30,21 @@ def round_to_precision(number, precision):
     return round(number, -(higher - precision))
 
 
-def get_sim_names(path, params):
+def get_sim_names(path, params, sorting=None):
     """
     Retourne tous les time stamp des fichiers avec les paramètres spécifiées qui sont dans le fichier de log spécifié
     par path.
     :param path: Le path du fichier de log
     :param params: Les paramètres voulus (sous forme d'un dictionnaire)
+    :param sorting: Nom de la colonne selon laquelle trier les données
     :return: Une list des time_stamp retenus
     """
     simulations = pd.read_csv(path, usecols=list(params.keys()) + ["time_stamp"])
     for key, val in params.items():
         simulations = simulations[simulations[key].isin(val)]
+
+    if sorting is not None:
+        simulations.sort_values(sorting)
 
     return simulations["time_stamp"]
 
