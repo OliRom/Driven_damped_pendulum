@@ -11,9 +11,9 @@ from scipy.fft import rfft, rfftfreq
 def plot_teta_and_omega_vs_t():
     t_max = 30  # Afficher les données jusqu'à ce temps
 
-    log_path = "test_log.csv"
+    log_path = "sim_simple.csv"
     log_file = pd.read_csv(log_path)
-    time_stamp = "2022_12_13_13_08_01_974951"
+    time_stamp = "2022_12_14_16_55_50_644538"
     sim_path = os.path.join(param.data_path, time_stamp + ".csv")
     data_file = pd.read_csv(sim_path)
     params = log_file[log_file["time_stamp"] == time_stamp]
@@ -40,28 +40,28 @@ def plot_3d_teta_omega_vs_other_param():
     Fonction incomplète et hardcodée
     :return:
     """
-    variable_name = "teta0"
-    ajout_dans_le_titre = "l'angle initial (rad)"
-    y_label = r"$\theta_0$ (rad)"
+    variable_name = "damping"
+    ajout_dans_le_titre = "du coefficient d'amortissement du pendule"
+    y_label = r"$\beta$"
 
-    path = "test_log.csv"
-    temps = np.arange(0, 10.005, 0.01)
-    variable = [of.round_to_precision(x, 8) for x in np.linspace(0, np.pi / 4, 100)]
-    # omega0 = [of.round_to_precision(x, 8) for x in np.linspace(0, 2, 100)]
+    path = "data_log.csv"
+    temps = np.arange(0, 20.0005, 0.005)
+    variable = [of.round_to_precision(x, 8) for x in [0]+list(np.linspace(0.01, 1, 100))+list(np.linspace(1, 10, 1000))]
+    omega0 = [of.round_to_precision(x, 8) for x in np.linspace(0, 2, 100)]
 
     params = {variable_name: variable}
-    paths = of.get_sim_names(path, params)
+    paths = of.get_sim_names(path, params, variable_name)
 
     x = temps
     y = variable
     teta = np.zeros((len(x), len(y)))
     omega = np.zeros((len(x), len(y)))
-    for path in paths:
+    for i, path in enumerate(paths):
         full_path = os.path.join(param.data_path, path + ".csv")
         data = pd.read_csv(full_path)
-        first_teta = of.round_to_precision(data[0], 8)
-        teta[:, y.index(first_teta)] = data["teta"]
-        omega[:, y.index(first_teta)] = data["omega"]
+        # first_teta = of.round_to_precision(data[0], 8)
+        teta[:, i] = data["teta"]
+        omega[:, i] = data["omega"]
 
     # Projection en 3D
     X, Y = np.meshgrid(x, y)
@@ -70,14 +70,15 @@ def plot_3d_teta_omega_vs_other_param():
     ax.set_xlabel("Temps (s)")
     ax.set_ylabel(y_label)
     ax.set_zlabel(r"$\theta$ (rad)")
-    plt.title(f"Évolution du pendule en fonction de {ajout_dans_le_titre}")
+    plt.title(f"Évolution du pendule en fonction {ajout_dans_le_titre}")
     plt.show()
 
     # Affichage 3D avec de la couleur
     fig, axs = plt.subplots(1, 2)
-    fig.suptitle(f"Évolution du pendule en fonction de {ajout_dans_le_titre}", fontsize=20)
+    fig.suptitle(f"Évolution du pendule en fonction {ajout_dans_le_titre}", fontsize=20)
 
-    pc0 = axs[0].pcolormesh(X, Y, teta.T)
+    teta = (teta + np.pi) % (2 * np.pi) - np.pi
+    pc0 = axs[0].pcolormesh(X, Y, teta.T, cmap="twilight")
     axs[0].set_title("Angle avec la verticale")
     axs[0].set_xlabel("Temps (s)")
     axs[0].set_ylabel(y_label)
@@ -103,16 +104,16 @@ def plot_bifurcation():
         indexes = [i * n_t_per_period for i in range(int(n_period+1)) if max_t / dt > i * n_t_per_period > first_index]
         return indexes
 
-    gamma = [of.round_to_precision(g, 8) for g in np.linspace(1.06, 1.087, 200)]
+    gamma = [of.round_to_precision(g, 8) for g in np.linspace(1.06, 1.53, 10000)]
     driving_ang_freq = 2 * np.pi
 
-    path = "test_log.csv"
+    path = "bifurcation_log.csv"
     log_file = pd.read_csv(path)
 
     params = {"gamma": gamma}
     paths = of.get_sim_names(path, params)
 
-    time_indexes = interesting_time_indexes(0.005, driving_ang_freq, 1000.0005)
+    time_indexes = interesting_time_indexes(0.005, driving_ang_freq, 100.0005)
     x = np.zeros(len(paths))
     y = np.zeros((len(x), len(time_indexes)))
 
@@ -132,7 +133,7 @@ def plot_bifurcation():
     for i in range(len(time_indexes)):
         plt.plot(x, y[:, i], color="blue", marker=',', lw=0, linestyle="")
 
-    plt.title(r"Diagramme de bifurcation pour $\gamma$ allant de 1.06 à ???")
+    plt.title(r"Diagramme de bifurcation pour $\gamma$ allant de 1,06 à 1,53")
     plt.xlabel(r"$\gamma$")
     plt.ylabel(r"$\theta$ (rad)")
     plt.show()
@@ -145,7 +146,7 @@ def plot_espace_phase():
 
     index_max = int(t_max/dt) + 1
 
-    time_stamp = "2022_12_13_13_08_01_974951"
+    time_stamp = "phase_g1p1"
     sim_path = os.path.join(param.data_path, time_stamp + ".csv")
     data_file = pd.read_csv(sim_path)
 
@@ -163,10 +164,10 @@ def plot_espace_phase():
 
 
 def plot_fft_simple():
-    time_stamp = "2022_12_13_13_08_01_974951"
-    n_tps = 200001
+    time_stamp = "2022_12_14_16_54_50_256710"
+    n_tps = 20001
     dt = 0.005
-    signal_x_max = 30  # Temps maximal du signal à afficher
+    signal_x_max = 20  # Temps maximal du signal à afficher
     fft_x_max = 10  # Fréquence maximale à afficher
 
     sim_path = os.path.join(param.data_path, time_stamp + ".csv")
@@ -191,6 +192,7 @@ def plot_fft_simple():
     axs[1].set_xlabel("Fréquence (Hz)")
     axs[1].set_ylabel("Amplitude")
     axs[1].plot(xfft[1:], np.abs(yfft)[1:])
+    axs[1].set_yscale("log")
     if fft_x_max is not None:
         axs[1].set_xlim(xmin=0, xmax=fft_x_max)
 
@@ -205,12 +207,12 @@ def plot_fft_multiple():
     y_label = r"$\gamma$"
     temps = [of.round_to_precision(t, 8) for t in np.arange(0, 100.0005, 0.005)]
 
-    log_path = "test_log.csv"
+    log_path = "bifurcation_log.csv"
 
     n_iter = len(temps)
     dt = temps[1] - temps[0]
     params = {variable_name: variable, "dt": [dt], "n_iter": [n_iter]}
-    paths = of.get_sim_names(log_path, params)
+    paths = of.get_sim_names(log_path, params)  # , variable_name)
 
     log_file = pd.read_csv(log_path)
     ordered_paths = log_file[log_file["time_stamp"].isin(paths)].sort_values(variable_name)["time_stamp"]
@@ -219,7 +221,6 @@ def plot_fft_multiple():
     x = rfftfreq(n_iter, dt)
     y = variable
     z = np.zeros((len(x), len(y)))
-    #yfft = rfft(teta) / n_tps * 2  # 2/n_tps est pour normaliser le spectre
     for i, path in enumerate(ordered_paths):
         data_path = os.path.join(param.data_path, path+".csv")
         data = pd.read_csv(data_path)
@@ -237,7 +238,4 @@ def plot_fft_multiple():
     plt.show()
 
 
-plot_fft_multiple()
-
-# plt.subplots_adjust(hspace=1, left=0.05, right=0.95)
-# plt.show()
+plot_fft_simple()
