@@ -15,16 +15,16 @@ def caller(obj):
 nb_process = 6
 
 t_range = [of.round_to_precision(t, 8) for t in np.arange(0, 100.0005, 0.005)]
-teta = -np.pi / 2
+teta = -np.pi / 4
 omega = 0
-gamma = 0.5
+gamma = 0
 # gamma = [of.round_to_precision(gam, 8) for gam in np.linspace(1.06, 1.53, 10000)]
 driving_ang_freq = 2 * np.pi
 driving_delta = 0
 l = 9.8/9/np.pi**2
 m = 1  #
 g = 9.8
-damping = m / 2 * np.sqrt(g/l)
+damping = m / 2 * np.sqrt(g/l) * 0
 log_path = "sim_simple.csv"
 
 # variable = [of.round_to_precision(var, 8) for var in np.linspace(1.06, 1.087, 1000)]
