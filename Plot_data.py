@@ -13,7 +13,7 @@ def plot_teta_and_omega_vs_t():
 
     log_path = "sim_simple.csv"
     log_file = pd.read_csv(log_path)
-    time_stamp = "2022_12_14_16_55_50_644538"
+    time_stamp = "2022_12_19_19_54_41_912480"
     sim_path = os.path.join(param.data_path, time_stamp + ".csv")
     data_file = pd.read_csv(sim_path)
     params = log_file[log_file["time_stamp"] == time_stamp]
@@ -164,7 +164,7 @@ def plot_espace_phase():
 
 
 def plot_fft_simple():
-    time_stamp = "2022_12_14_16_54_50_256710"
+    time_stamp = "2022_12_14_16_55_50_644538"
     n_tps = 20001
     dt = 0.005
     signal_x_max = 20  # Temps maximal du signal à afficher
